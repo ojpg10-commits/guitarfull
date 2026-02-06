@@ -3,43 +3,50 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GuitarTab Player - Ejemplo</title>
+  <title>GuitarTab Player - Canvas Editor</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <main>
-    <h1>GuitarTab Player (ejemplo)</h1>
+    <h1>GuitarTab Player — Editor con Canvas</h1>
 
     <div class="controls">
-      <button id="playBtn">Play</button>
+      <button id="playBtn">Reproducir</button>
       <button id="stopBtn">Stop</button>
+
       <label>Tempo: <input id="tempo" type="number" value="90" min="30" max="300"> BPM</label>
-      <label>Velocity: <input id="velocity" type="range" min="0" max="127" value="100"></label>
-      <label>Subdivisión (paso): <select id="subdivision">
-        <option value="16">1/16 (por defecto)</option>
-        <option value="8">1/8</option>
-        <option value="4">1/4</option>
-      </select></label>
+      <label>Velocidad: <input id="velocity" type="range" min="1" max="127" value="100"></label>
+
+      <label>Pasos: <input id="stepsCount" type="number" value="32" min="8" max="256" step="1" style="width:80px"></label>
+
+      <button id="clearBtn">Limpiar</button>
+      <button id="exportBtn">Exportar JSON</button>
       <input id="fileInput" type="file" accept=".json" style="display:none">
-      <button id="openBtn">Abrir (.json)</button>
-      <button id="saveBtn">Guardar (.json)</button>
-      <button id="loadSampleBtn">Cargar ejemplo</button>
+      <button id="importBtn">Importar JSON</button>
     </div>
 
-    <section class="editor">
-      <h2>Editor de tablatura (edítala)</h2>
-      <p class="hint">Formato: 6 líneas, de arriba a abajo: e B G D A E. Usa números para trastes y '-' para silencio. Ejemplo en el botón "Cargar ejemplo".</p>
-      <textarea id="tabEditor" rows="12" cols="80" spellcheck="false"></textarea>
+    <section class="canvas-section">
+      <div class="canvas-wrap">
+        <canvas id="tabCanvas" width="960" height="240"></canvas>
+        <div id="canvasHint">Haz clic en una celda para añadir/editar el número de traste (0-99). Mantén pulsado para arrastrar.</div>
+      </div>
+
+      <aside class="side-visuals">
+        <h3>Mástil (posiciones activas)</h3>
+        <div id="fretboardSmall"></div>
+
+        <h3>Teclado</h3>
+        <div id="pianoSmall"></div>
+      </aside>
     </section>
 
-    <section class="visuals">
-      <div id="tablatureDisplay"></div>
-      <div id="fretboard"></div>
-      <div id="piano"></div>
+    <section class="tab-output">
+      <h2>Salida (ASCII tab por pasos)</h2>
+      <pre id="tabText"></pre>
+      <h2>JSON de la canción</h2>
+      <pre id="songJson"></pre>
     </section>
 
-    <h2>JSON de la canción</h2>
-    <pre id="songJson"></pre>
   </main>
 
   <script src="app.js"></script>
