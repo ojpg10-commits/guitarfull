@@ -1,0 +1,73 @@
+:root {
+    --background-color: #f8f9fa;
+    --text-color: #343a40;
+    --primary-color: #007bff;
+    --secondary-color: #6c757d;
+}
+
+[data-theme='dark'] {
+    --background-color: #343a40;
+    --text-color: #f8f9fa;
+    --primary-color: #66b3ff;
+    --secondary-color: #adb5bd;
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Arial', sans-serif;
+}
+
+header, footer {
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    padding: 1rem;
+    text-align: center;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+}
+
+.button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.button:hover {
+    background-color: var(--secondary-color);
+}
+
+.tab {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+    border: 1px solid var(--secondary-color);
+    margin-bottom: 1rem;
+}
+
+.tab-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0.5rem;
+    }
+    .button {
+        width: 100%;
+    }
+}
+
+/* Accessibility features */
+:focus {
+    outline: 2px dashed var(--primary-color);
+}
