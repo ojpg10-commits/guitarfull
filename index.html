@@ -1,54 +1,282 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>GuitarTab Player - Canvas Editor</title>
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Editor interactivo de tablatura de guitarra con canvas. Crea, edita y reproduce tablaturas de guitarra fácilmente." />
+  <meta name="keywords" content="guitarra, tablatura, editor, música, canvas, tab player" />
+  <meta name="author" content="ojpg10-commits" />
+  <meta name="theme-color" content="#1a1a2e" />
+  
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://ojpg10-commits.github.io/guitarfull/" />
+  <meta property="og:title" content="GuitarTab Player - Editor Canvas Interactivo" />
+  <meta property="og:description" content="Editor profesional de tablaturas de guitarra con canvas y reproducción MIDI" />
+  <meta property="og:image" content="https://ojpg10-commits.github.io/guitarfull/assets/preview.png" />
+  
+  <!-- Twitter -->
+  <meta property="twitter:card" content="summary_large_image" />
+  <meta property="twitter:url" content="https://ojpg10-commits.github.io/guitarfull/" />
+  <meta property="twitter:title" content="GuitarTab Player - Editor Canvas Interactivo" />
+  <meta property="twitter:description" content="Editor profesional de tablaturas de guitarra" />
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🎸</text></svg>" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><text y='135' font-size='135'>🎸</text></svg>" />
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json" />
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet" />
+  
+  <title>GuitarTab Player — Editor Canvas Interactivo de Tablaturas</title>
 </head>
 <body>
-  <main>
-    <h1>GuitarTab Player — Editor con Canvas</h1>
-
-    <div class="controls">
-      <button id="playBtn">Reproducir</button>
-      <button id="stopBtn">Stop</button>
-
-      <label>Tempo: <input id="tempo" type="number" value="90" min="30" max="300"> BPM</label>
-      <label>Velocidad: <input id="velocity" type="range" min="1" max="127" value="100"></label>
-
-      <label>Pasos: <input id="stepsCount" type="number" value="32" min="8" max="256" step="1" style="width:80px"></label>
-
-      <button id="clearBtn">Limpiar</button>
-      <button id="exportBtn">Exportar JSON</button>
-      <input id="fileInput" type="file" accept=".json" style="display:none">
-      <button id="importBtn">Importar JSON</button>
-    </div>
-
-    <section class="canvas-section">
-      <div class="canvas-wrap">
-        <canvas id="tabCanvas" width="960" height="240"></canvas>
-        <div id="canvasHint">Haz clic en una celda para añadir/editar el número de traste (0-99). Mantén pulsado para arrastrar.</div>
+  <a href="#main" class="skip-link">Ir al contenido principal</a>
+  
+  <header class="app-header" role="banner">
+    <div class="header-content">
+      <div class="logo">
+        <span class="logo-icon" aria-hidden="true">🎸</span>
+        <h1>GuitarTab Player</h1>
+        <p class="tagline">Editor Canvas Interactivo</p>
       </div>
+      <nav class="header-nav" aria-label="Navegación principal">
+        <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema (oscuro/claro)" title="Cambiar tema">
+          <span class="theme-icon" aria-hidden="true">🌙</span>
+        </button>
+        <button id="helpBtn" class="help-btn" aria-label="Mostrar ayuda" title="Ayuda">
+          <span aria-hidden="true">?</span>
+        </button>
+      </nav>
+    </div>
+  </header>
 
-      <aside class="side-visuals">
-        <h3>Mástil (posiciones activas)</h3>
-        <div id="fretboardSmall"></div>
+  <main id="main" class="main-content" role="main">
+    <!-- Controles principales -->
+    <section class="controls-section" aria-labelledby="controls-heading">
+      <h2 id="controls-heading" class="section-heading">Controles</h2>
+      
+      <div class="controls-grid">
+        <!-- Grupo de reproducción -->
+        <fieldset class="control-group">
+          <legend>Reproducción</legend>
+          <div class="button-group">
+            <button id="playBtn" class="btn btn-primary" aria-label="Reproducir tabatura">
+              <span aria-hidden="true">▶</span> Reproducir
+            </button>
+            <button id="stopBtn" class="btn btn-secondary" aria-label="Detener reproducción">
+              <span aria-hidden="true">⏹</span> Stop
+            </button>
+            <button id="pauseBtn" class="btn btn-secondary" aria-label="Pausar reproducción">
+              <span aria-hidden="true">⏸</span> Pausa
+            </button>
+          </div>
+        </fieldset>
 
-        <h3>Teclado</h3>
-        <div id="pianoSmall"></div>
-      </aside>
+        <!-- Grupo de parámetros -->
+        <fieldset class="control-group">
+          <legend>Parámetros</legend>
+          <div class="param-inputs">
+            <div class="input-group">
+              <label for="tempo">Tempo (BPM):</label>
+              <input 
+                id="tempo" 
+                type="number" 
+                value="90" 
+                min="30" 
+                max="300" 
+                aria-describedby="tempo-help"
+              />
+              <span id="tempo-help" class="help-text">Pulsaciones por minuto</span>
+            </div>
+
+            <div class="input-group">
+              <label for="velocity">Velocidad MIDI:</label>
+              <input 
+                id="velocity" 
+                type="range" 
+                min="1" 
+                max="127" 
+                value="100"
+                aria-describedby="velocity-help"
+              />
+              <span id="velocity-help" class="help-text">1-127</span>
+            </div>
+
+            <div class="input-group">
+              <label for="stepsCount">Pasos:</label>
+              <input 
+                id="stepsCount" 
+                type="number" 
+                value="32" 
+                min="8" 
+                max="256" 
+                step="1"
+                aria-describedby="steps-help"
+              />
+              <span id="steps-help" class="help-text">8-256 pasos</span>
+            </div>
+          </div>
+        </fieldset>
+
+        <!-- Grupo de edición -->
+        <fieldset class="control-group">
+          <legend>Edición</legend>
+          <div class="button-group">
+            <button id="clearBtn" class="btn btn-danger" aria-label="Limpiar todas las notas">
+              <span aria-hidden="true">🗑</span> Limpiar
+            </button>
+            <button id="undoBtn" class="btn btn-secondary" aria-label="Deshacer último cambio">
+              <span aria-hidden="true">↶</span> Deshacer
+            </button>
+            <button id="redoBtn" class="btn btn-secondary" aria-label="Rehacer último cambio">
+              <span aria-hidden="true">↷</span> Rehacer
+            </button>
+          </div>
+        </fieldset>
+
+        <!-- Grupo de importar/exportar -->
+        <fieldset class="control-group">
+          <legend>Importar/Exportar</legend>
+          <div class="button-group">
+            <button id="exportBtn" class="btn btn-info" aria-label="Exportar tabatura como JSON">
+              <span aria-hidden="true">⬇</span> Exportar
+            </button>
+            <button id="importBtn" class="btn btn-info" aria-label="Importar tabatura desde JSON">
+              <span aria-hidden="true">⬆</span> Importar
+            </button>
+            <input 
+              id="fileInput" 
+              type="file" 
+              accept=".json" 
+              style="display:none" 
+              aria-label="Selector de archivo JSON"
+            />
+            <button id="exportPdfBtn" class="btn btn-info" aria-label="Exportar como PDF">
+              <span aria-hidden="true">📄</span> PDF
+            </button>
+          </div>
+        </fieldset>
+      </div>
     </section>
 
-    <section class="tab-output">
-      <h2>Salida (ASCII tab por pasos)</h2>
-      <pre id="tabText"></pre>
-      <h2>JSON de la canción</h2>
-      <pre id="songJson"></pre>
+    <!-- Sección de canvas y visuales -->
+    <section class="canvas-section" aria-labelledby="canvas-heading">
+      <h2 id="canvas-heading" class="section-heading">Editor Visual</h2>
+      
+      <div class="canvas-container">
+        <div class="canvas-wrap">
+          <div class="canvas-info" role="status" aria-live="polite">
+            <span id="canvasStatus">Listo</span>
+          </div>
+          <canvas 
+            id="tabCanvas" 
+            width="960" 
+            height="240"
+            role="img"
+            aria-label="Canvas de editor de tabatura. Haz clic para añadir notas."
+          ></canvas>
+          <div id="canvasHint" class="canvas-hint" role="tooltip">
+            💡 Haz clic en una celda para añadir/editar el número de traste (0-99). Mantén pulsado para arrastrar.
+          </div>
+        </div>
+
+        <!-- Visuales secundarios -->
+        <aside class="side-visuals" aria-labelledby="visuals-heading">
+          <h3 id="visuals-heading">Visualización</h3>
+          
+          <article class="visual-section">
+            <h4>Mástil (Posiciones Activas)</h4>
+            <div 
+              id="fretboardSmall" 
+              class="fretboard-display"
+              role="img"
+              aria-label="Visualización del mástil de guitarra"
+            ></div>
+          </article>
+
+          <article class="visual-section">
+            <h4>Teclado MIDI</h4>
+            <div 
+              id="pianoSmall" 
+              class="piano-display"
+              role="img"
+              aria-label="Visualización del teclado MIDI"
+            ></div>
+          </article>
+        </aside>
+      </div>
     </section>
 
+    <!-- Sección de salida -->
+    <section class="output-section" aria-labelledby="output-heading">
+      <h2 id="output-heading" class="section-heading">Salida y Datos</h2>
+      
+      <div class="output-grid">
+        <article class="output-panel">
+          <h3>ASCII Tab (por pasos)</h3>
+          <div class="output-controls">
+            <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('tabText')">Copiar</button>
+          </div>
+          <pre id="tabText" role="status" aria-live="polite"></pre>
+        </article>
+
+        <article class="output-panel">
+          <h3>Datos JSON</h3>
+          <div class="output-controls">
+            <button class="btn btn-sm btn-secondary" onclick="copyToClipboard('songJson')">Copiar</button>
+          </div>
+          <pre id="songJson" role="status" aria-live="polite"></pre>
+        </article>
+      </div>
+    </section>
   </main>
 
-  <script src="app.js"></script>
+  <!-- Modal de ayuda -->
+  <dialog id="helpModal" class="modal" aria-labelledby="help-title">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2 id="help-title">Ayuda y Tutorial</h2>
+        <button class="modal-close" onclick="document.getElementById('helpModal').close()">✕</button>
+      </header>
+      <div class="modal-body">
+        <h3>¿Cómo usar el editor?</h3>
+        <ol>
+          <li><strong>Hacer clic:</strong> Añade o edita el número de traste en una celda</li>
+          <li><strong>Arrastrar:</strong> Mantén pulsado para arrastrar y crear patrones</li>
+          <li><strong>Tempo:</strong> Ajusta la velocidad de reproducción en BPM</li>
+          <li><strong>Exportar:</strong> Guarda tu tabatura como JSON o PDF</li>
+          <li><strong>Importar:</strong> Carga una tabatura guardada</li>
+        </ol>
+        
+        <h3>Atajos de teclado</h3>
+        <table>
+          <tr><td><kbd>Espacio</kbd></td><td>Play/Pause</td></tr>
+          <tr><td><kbd>Ctrl+Z</kbd></td><td>Deshacer</td></tr>
+          <tr><td><kbd>Ctrl+Y</kbd></td><td>Rehacer</td></tr>
+          <tr><td><kbd>Ctrl+E</kbd></td><td>Exportar</td></tr>
+          <tr><td><kbd>Ctrl+I</kbd></td><td>Importar</td></tr>
+        </table>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- Notificaciones -->
+  <div id="notificationContainer" class="notification-container" role="region" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Scripts -->
+  <script src="app.js" defer></script>
+  <script>
+    // Registrar Service Worker para PWA
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(err => console.log('SW registration failed:', err));
+    }
+  </script>
 </body>
 </html>
